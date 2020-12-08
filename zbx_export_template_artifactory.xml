@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2020-12-08T10:31:55Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template App Artifactory</template>
+            <name>Template App Artifactory</name>
+            <description>Monitor artifactory microservices</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Artifactory</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Artifactory Microservices</name>
+                    <key>artifactory.discovery[]</key>
+                    <delay>60s</delay>
+                    <lifetime>1d</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Microservice {#SERVICE} - {#SERVICE_DESC} - Health</name>
+                            <key>artifactory.stats[{#SERVICE}, health]</key>
+                            <delay>60s</delay>
+                            <history>7d</history>
+                            <applications>
+                                <application>
+                                    <name>Artifactory</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{max(#3)}=0</expression>
+                                    <name>Artifactory Microservice {#SERVICE} is down on {HOST.NAME}</name>
+                                    <priority>WARNING</priority>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Artifactory Microservice {#SERVICE} is down on {HOST.NAME}</name>
+                                            <expression>{Template App Artifactory:artifactory.stats[{#SERVICE}, health].max({$ESCALATION_1_DELAY})}=0</expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{max({$ESCALATION_1_DELAY})}=0</expression>
+                                    <name>Artifactory Microservice {#SERVICE} is down on {HOST.NAME}</name>
+                                    <priority>HIGH</priority>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Artifactory Microservice {#SERVICE} is down on {HOST.NAME}</name>
+                                            <expression>{Template App Artifactory:artifactory.stats[{#SERVICE}, health].max({$ESCALATION_2_DELAY})}=0</expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{max({$ESCALATION_2_DELAY})}=0</expression>
+                                    <name>Artifactory Microservice {#SERVICE} is down on {HOST.NAME}</name>
+                                    <priority>DISASTER</priority>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=0</expression>
+                                    <name>Artifactory Microservice {#SERVICE} is unavailable on {HOST.NAME}</name>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>
