@@ -64,8 +64,9 @@ def get_data_from_api(api_url):
 def get_item_from_data(data, service_name, item):
     service = data['services'].get(service_name)
     if item == 'health':
-        return "%s - %s" % (service['message'], service['state'])
-
+        if service['state'] == "HEALTHY":
+            return 1
+        return 0
 
 if __name__ == "__main__":
     args = get_args()
